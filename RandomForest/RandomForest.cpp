@@ -12,7 +12,7 @@ void RandomForest::fit() {
     // draw a random sample from X and y
     Indices bootstrap = sample(ids);
 #pragma omp parallel for
-    for (size_t i = 0; i < numOfTrees; ++i) {
+    for (int i = 0; i < numOfTrees; ++i) {
         DecisionTree tree;
         // train a tree with the sample
         tree.fit(X, y, bootstrap, maxValues);
@@ -34,11 +34,18 @@ Indices RandomForest::sample(const Indices &ids) {
 
 // TODO: predictions
 MutLabels RandomForest::predict(Values &X) {
+    MutLabels y;
+    return y;
 }
 
 bool RandomForest::loadDataSet(const char* filename, size_t idIdx, size_t labelIdx) {
     char buffer[1024];
     std::ifstream file(filename);
+
+    if (!file) {
+        return false;
+    }
+
     string line;
     string value;
     std::getline(file, line); // first line
@@ -65,4 +72,6 @@ bool RandomForest::loadDataSet(const char* filename, size_t idIdx, size_t labelI
         X.push_back(temp);
         row++;
     }
+
+    return true;
 }

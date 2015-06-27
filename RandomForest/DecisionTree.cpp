@@ -58,7 +58,8 @@ void DecisionTree::_fit(Values &X, Labels &y,
 
 // TODO: prediction
 MutLabels DecisionTree::predict(Values &X) {
-
+    MutLabels y;
+    return y;
 }
 
 double DecisionTree::gini(Labels &y, const Indices &ids) {
