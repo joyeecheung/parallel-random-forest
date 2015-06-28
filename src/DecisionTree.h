@@ -1,4 +1,7 @@
-#include "Config.cpp"
+#ifndef DECISION_TREE_H
+#define DECISION_TREE_H
+
+#include "Config.h"
 
 #include <chrono>
 #include <random>
@@ -9,7 +12,17 @@ public:
             if (data.find(y[id]) != data.end()) {
                 data[y[id]] += 1;
             } else {
-                data[y[id]] = 0;
+                data[y[id]] = 1;
+            }
+        }
+    }
+
+    Counter(Labels &y) {
+        for (auto &label : y) {
+            if (data.find(label) != data.end()) {
+                data[label] += 1;
+            } else {
+                data[label] = 1;
             }
         }
     }
@@ -17,10 +30,18 @@ public:
     int getMostFrequent() const {
         std::vector<pair<int, int>> pairs(data.begin(), data.end());
         sort(pairs.begin(), pairs.end(), [=](pair<int, int>& a, pair<int, int>& b) {
-                return a.second < b.second;
+                return a.second > b.second;
             }
         );
-        return pairs.end()->first;
+        return pairs.begin()->first;
+    }
+
+    void print(int indent = 0) {
+        for (int i = 0; i < indent; ++i) printf(" ");
+        for (auto &kv : data) {
+            printf("%d: %d, ", kv.first, kv.second);
+        }
+        printf("\n");
     }
 
     map<int, int> data;
@@ -60,12 +81,10 @@ public:
         // all automatically recycled
     }
 
+    void print(int indent = 2);
 
     void fit(Values &X, Labels &y, const Indices &ids,
-             const size_t &maxValues) {
-        const IndicesSet features = chooseValues(FEATURE_NUM, maxValues);
-        _fit(X, y, ids, features);
-    }
+             const size_t &maxValues);
 
     void _fit(Values &X, Labels &y,
               const Indices &ids, const IndicesSet &features);
@@ -78,8 +97,8 @@ private:
                 const Indices &set1, const Indices &set2, double initial);
     IndicesSet chooseValues(size_t numValues, size_t maxValues);
     Indices argsort(Values &X, const Indices &ids, size_t attr);
-    bool split(Values &X, const Indices &sorted_idx, size_t id_count,
-               Indices &set1, Indices &set2);
+    bool split(Values &X, const Indices &sorted_idx,
+               Indices &set1, Indices &set2, size_t attr);
 
     std::shared_ptr<DecisionTree> left;
     std::shared_ptr<DecisionTree> right;
@@ -90,3 +109,5 @@ private:
 
     std::shared_ptr<Counter> leaf;
 };
+
+#endif

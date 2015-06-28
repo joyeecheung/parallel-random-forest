@@ -2,5 +2,9 @@
 *.opensdf
 *.sdf
 *.suo
-Debug
+*.exe
+*.ilk
+*.pdb
+obj
+data
 
