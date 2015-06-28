@@ -12,6 +12,7 @@
 #include <map>
 #include <string>
 #include <memory>
+#include <ppl.h>
 
 using std::shared_ptr;
 using std::vector;
@@ -28,6 +29,7 @@ typedef set<size_t> IndicesSet;
 
 #define FEATURE_NUM 617
 #define LABLE_NUM 26
+#define MIN_NODE_SIZE 2
 
 typedef array<double, FEATURE_NUM> MutRow;
 typedef const array<double, FEATURE_NUM> Row;

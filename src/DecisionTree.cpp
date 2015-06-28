@@ -16,45 +16,51 @@ void DecisionTree::fit(Values &X, Labels &y, const Indices &ids,
 // ids: ids to avalable data rows
 // features: ids to sampled features
 void DecisionTree::_fit(Values &X, Labels &y,
-          const Indices &ids, const IndicesSet &features) {
+                        const Indices &ids, const IndicesSet &features) {
     if (ids.size() == 0) {
         return; // leaves
     }
 
     // get the best feature to split
-    double initial = gini(y, ids), best_score = 0.0, best_value, score;
+    double best_score = 0.0, best_value, score;
     size_t best_attr;
     Indices best_set1, best_set2;
 
+    if (ids.size() > MIN_NODE_SIZE){
+        double initial = gini(y, ids);
 #ifdef DEBUG_TREE
-    //printf("======================================\n");
-    //printf("Initial gini: %f\n", initial);
+        //printf("======================================\n");
+        //printf("Initial gini: %f\n", initial);
 #endif
-    // Note: if features.size() == 0, best_score = 0.0
-    for (auto &attr : features) {
-        // choose the threshold
-        const Indices sorted_idx = argsort(X, ids, attr);
-        size_t id_count = sorted_idx.size();
-        double threshold = X[sorted_idx[id_count / 2]][attr];
-        // devide the data set into two sets
-        Indices set1, set2;
-        bool missed = split(X, sorted_idx, set1, set2, attr);
-        //bool missed = split(X, sorted_idx, id_count, set1, set2);
+        // Note: if features.size() == 0, best_score = 0.0
+        for (auto &attr : features) {
+            // choose the threshold
+            const Indices sorted_idx = argsort(X, ids, attr);
+            size_t id_count = sorted_idx.size();
+            double threshold = X[sorted_idx[id_count / 2]][attr];
+            // divide the data set into two sets
+            Indices set1, set2;
+            bool missed = split(X, sorted_idx, set1, set2, attr);
+            //bool missed = split(X, sorted_idx, id_count, set1, set2);
 
-        // get the score of this attribute
-        if (missed || set1.size() == 0 || set2.size() == 0) {
-            score = 0.0;
-        } else {
-            score = gain(X, y, ids, set1, set2, initial);
-        }
+            // get the score of this attribute
+            if (missed || set1.size() == 0 || set2.size() == 0) {
+                score = 0.0;
+            } else {
+                score = gain(X, y, ids, set1, set2, initial);
+            }
 
-        // update best score
-        if (score > best_score) {
-            best_score = score;
-            best_attr = attr;
-            best_value = threshold;
-            best_set1 = set1;
-            best_set2 = set2;
+            // update best score
+            if (score > best_score) {
+                {
+                    best_score = score;
+                    best_attr = attr;
+                    best_value = threshold;
+                    best_set1 = set1;
+                    best_set2 = set2;
+                }
+
+            }
         }
     }
 
@@ -82,7 +88,7 @@ void DecisionTree::_fit(Values &X, Labels &y,
     }
 }
 
-// TODO: prediction
+
 MutLabels DecisionTree::predict(Values &X) {
     int total = X.size();
     MutLabels y(total);

@@ -7,6 +7,7 @@ RandomForest::RandomForest(size_t numOfTrees, size_t maxValues, size_t numLabels
     this->maxValues = maxValues;
     this->numLabels = numLabels;
     this->sampleCoeff = sampleCoeff;
+    this->forest.resize(numOfTrees);
 };
 
 
@@ -18,14 +19,15 @@ void RandomForest::fit(Values &X, Labels &y, const Indices &ids) {
 #endif
     // draw a random sample from X and y
 
-    //TODO: parallel
-    //#pragma omp parallel for
+//TODO: parallel
+#pragma omp parallel for
     for (int i = 0; i < numOfTrees; ++i) {
+
         DecisionTree tree;
         // train a tree with the sample
         tree.fit(X, y, bootstrap, maxValues);
         // put it into the forest
-        forest.push_back(tree);
+        forest[i] = tree;
 #ifdef DEBUG_TREE
         tree.print();
 #endif
@@ -44,9 +46,9 @@ Indices RandomForest::sample(const Indices &ids) {
     size_t sample_size = (int)(sampleCoeff * data_size);
     Indices idx;
 
-    //TODO: parallel
-    //#pragma omp parallel for
-    for (size_t i = 0; i < sample_size; ++i) {
+//TODO: parallel
+//#pragma omp parallel for
+    for (int i = 0; i < sample_size; ++i) {
         size_t next = rand() % data_size;  // with replacement
         idx.push_back(next);
     }
