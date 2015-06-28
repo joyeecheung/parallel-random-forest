@@ -30,23 +30,24 @@ int main(int argc, char *argv[]) {
     MutValues X, test_X;
     MutLabels y, dummy;
     Indices ids, test_ids;
+
     csv2data("data/train.csv", X, y, ids, 0, FEATURE_NUM + 1);
     rf.fit(X, y, ids);
-    csv2data("data/test.csv", test_X, dummy, test_ids, 0);
+    csv2data("data/1000.csv", test_X, dummy, test_ids, 0);
     Labels yhat = rf.predict(test_X);
     size_t count = yhat.size();
     
-    //int errors = 0;
-    //for (size_t i = 0; i < count; ++i) {
-    //    if (yhat[i] != y[i]) errors++;
-    //    printf("(%d, %d);  ", yhat[i], y[i]);
-    //}
-    //printf("\nErrors: %d, %f\n", errors, (double)errors/count);
-    std::ofstream out("data/submit.csv");
-    out << "id,label\n";
+    int errors = 0;
     for (size_t i = 0; i < count; ++i) {
-        out << test_ids[i] << ',' << yhat[i] << '\n';
+        if (yhat[i] != y[i]) errors++;
+        printf("(%d, %d);  ", yhat[i], y[i]);
     }
+    printf("\nErrors: %d, %f\n", errors, (double)errors/count);
+    //std::ofstream out("data/submit.csv");
+    //out << "id,label\n";
+    //for (size_t i = 0; i < count; ++i) {
+    //    out << test_ids[i] << ',' << yhat[i] << '\n';
+    //}
     
     return 0;
 }
