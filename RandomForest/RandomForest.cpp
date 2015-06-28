@@ -1,4 +1,5 @@
 #include "RandomForest.h"
+#include <cmath>
 
 RandomForest::RandomForest(size_t numOfTrees, size_t maxValues, size_t numLabels,
              double sampleCoeff) {
@@ -32,10 +33,28 @@ Indices RandomForest::sample(const Indices &ids) {
     return idx;
 }
 
-// TODO: predictions
 MutLabels RandomForest::predict(Values &X) {
-    MutLabels y;
+    int total = X.size();
+    MutLabels y(total);
+    // TODO: parallel
+    for (int i = 0; i < total; ++i) {
+        y[i] = predict(X[i]);
+    }
     return y;
+}
+
+// TODO: predictions
+int RandomForest::predict(Row &x) {
+    // get the prediction from all tress
+    vector<int> results(numOfTrees);
+    int sum;
+    // TODO: parallel
+    for (int i = 0; i < numOfTrees; ++i) {
+        results[i] = forest[i].predict(x);
+        sum += results[i];
+    }
+    // average
+    return round((double)sum / numOfTrees);
 }
 
 bool RandomForest::loadDataSet(const char* filename, size_t idIdx, size_t labelIdx) {
@@ -53,7 +72,7 @@ bool RandomForest::loadDataSet(const char* filename, size_t idIdx, size_t labelI
     // for each line
     size_t row = 0;
     while (std::getline(file, line)) {
-        Row temp;
+        MutRow temp;
         std::istringstream ss(line);
         // split by commas
         size_t col = 0;

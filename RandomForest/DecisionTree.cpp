@@ -48,7 +48,7 @@ void DecisionTree::_fit(Values &X, Labels &y,
         this->right->_fit(X, y, best_set2, new_attr);
 
         this->attr = best_attr;
-        this->value = best_value;
+        this->threshold = best_value;
         this->count = ids.size();
     } else { // all attributes tested
         this->leaf = shared_ptr<Counter>(new Counter(y, ids));
@@ -58,9 +58,28 @@ void DecisionTree::_fit(Values &X, Labels &y,
 
 // TODO: prediction
 MutLabels DecisionTree::predict(Values &X) {
-    MutLabels y;
+    int total = X.size();
+    MutLabels y(total);
+    // TODO: parallel
+    for (int i = 0; i < total; ++i) {
+        y[i] = predict(X[i]);
+    }
     return y;
 }
+
+int DecisionTree::predict(Row &x) {
+    if (leaf != nullptr) {  // leaf
+        return leaf->getMostFrequent();
+    }
+
+    double value = x[attr];
+    if (value < threshold) {
+        return left->predict(x);
+    } else {
+        return right->predict(x);
+    }
+}
+
 
 double DecisionTree::gini(Labels &y, const Indices &ids) {
     size_t total = ids.size();

@@ -11,6 +11,7 @@ public:
     void fit();
     Indices sample(const Indices &ids);
     MutLabels predict(Values &X);
+    int predict(Row &x);
     bool loadDataSet(const char* filename, size_t idIdx, size_t labelIdx);
 private:
     vector<DecisionTree> forest;

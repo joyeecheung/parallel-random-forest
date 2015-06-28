@@ -14,6 +14,7 @@ using std::array;
 using std::set;
 using std::map;
 using std::string;
+using std::pair;
 
 typedef vector<int> MutLabels;
 typedef const vector<int> Labels;
@@ -21,8 +22,9 @@ typedef vector<size_t> Indices;
 typedef set<size_t> IndicesSet;
 
 #define FEATURE_NUM 60
+typedef array<double, FEATURE_NUM> MutRow;
+typedef const array<double, FEATURE_NUM> Row;
 typedef vector<array<double, FEATURE_NUM> > MutValues;
-typedef array<double, FEATURE_NUM> Row;
 typedef const vector<array<double, FEATURE_NUM> > Values;
 
 #endif

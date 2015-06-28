@@ -14,6 +14,15 @@ public:
         }
     }
 
+    int getMostFrequent() const {
+        std::vector<pair<int, int>> pairs(data.begin(), data.end());
+        sort(pairs.begin(), pairs.end(), [=](pair<int, int>& a, pair<int, int>& b) {
+                return a.second < b.second;
+            }
+        );
+        return pairs.end()->first;
+    }
+
     map<int, int> data;
 };
 
@@ -28,7 +37,7 @@ public:
         this->right = other.right;
         this->leaf = other.leaf;
         this->attr = other.attr;
-        this->value = other.value;
+        this->threshold = other.threshold;
         this->count = other.count;
     }
 
@@ -37,7 +46,7 @@ public:
         std::swap(this->right, other.right);
         std::swap(this->leaf, other.leaf);
         std::swap(this->attr, other.attr);
-        std::swap(this->value, other.value);
+        std::swap(this->threshold, other.threshold);
         std::swap(this->count, other.count);
     }
 
@@ -53,7 +62,7 @@ public:
 
 
     void fit(Values &X, Labels &y, const Indices &ids,
-             const size_t maxValues) {
+             const size_t &maxValues) {
         const IndicesSet features = chooseValues(FEATURE_NUM, maxValues);
         _fit(X, y, ids, features);
     }
@@ -62,6 +71,7 @@ public:
               const Indices &ids, const IndicesSet &features);
 
     MutLabels predict(Values &X);
+    int predict(Row &x);
 private:
     double gini(Labels &y, const Indices &ids);
     double gain(Values &X, Labels &y, const Indices &ids,
@@ -75,7 +85,7 @@ private:
     std::shared_ptr<DecisionTree> right;
 
     size_t attr;
-    double value;
+    double threshold;
     size_t count;
 
     std::shared_ptr<Counter> leaf;
