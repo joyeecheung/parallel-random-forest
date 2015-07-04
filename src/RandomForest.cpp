@@ -61,8 +61,8 @@ MutLabels RandomForest::predict(Values &X) {
 #ifdef DEBUG_FOREST
     printf("\nStart prediction, data size %d...\n", X.size());
 #endif
-    //TODO: parallel
-    //#pragma omp parallel for
+//TODO: parallel
+#pragma omp parallel for
     for (int i = 0; i < total; ++i) {
         y[i] = predict(X[i]);
     }
