@@ -26,7 +26,10 @@ Defined in [Config.h](src/Config.h).
 
 ```
 .
-├─ README.md
+├─ premake5.lua (premake build scripts)
+├─ RandomForest.vcxproj.filters, RandomForest.vcxproj, RandomForest.sln(VS2013 project files)
+├─ RandomForest.exe (executable built with VS2013)
+├─ README.md (you are reading this)
 ├─ doc
 │   └── report.pdf
 ├─ data (dataset and output)
