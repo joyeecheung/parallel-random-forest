@@ -1,21 +1,8 @@
 #include "DecisionTree.h"
 
-void DecisionTree::fit(Values &X, Labels &y, const Indices &ids,
-         const size_t &maxValues) {
-    const IndicesSet features = chooseValues(FEATURE_NUM, maxValues);
-#ifdef DEBUG_TREE
-    printf("Chosen features: ");
-    for (auto &f : features) {
-        printf("%d ", f);
-    }
-    printf("\n");
-#endif
-    _fit(X, y, ids, features);
-}
-
 // ids: ids to avalable data rows
 // features: ids to sampled features
-void DecisionTree::_fit(Values &X, Labels &y,
+void DecisionTree::fit(Values &X, Labels &y,
                         const Indices &ids, const IndicesSet &features) {
     if (ids.size() == 0) {
         return; // leaves
@@ -69,8 +56,8 @@ void DecisionTree::_fit(Values &X, Labels &y,
         new_attr.erase(best_attr);
         this->left = shared_ptr<DecisionTree>(new DecisionTree);
         this->right = shared_ptr<DecisionTree>(new DecisionTree);
-        this->left->_fit(X, y, best_set1, new_attr);
-        this->right->_fit(X, y, best_set2, new_attr);
+        this->left->fit(X, y, best_set1, new_attr);
+        this->right->fit(X, y, best_set2, new_attr);
 
         this->attr = best_attr;
         this->threshold = best_value;
@@ -132,17 +119,6 @@ double DecisionTree::gain(Values &X, Labels &y, const Indices &ids,
     double p = (double)set1.size() / ids.size();
     double remainder = p * gini(y, set1) + (1 - p) * gini(y, set2);
     return initial - remainder;
-}
-
-IndicesSet DecisionTree::chooseValues(size_t numValues, size_t maxValues) {
-    // randomly choose maxValues numbers from [0, numValues - 1]
-    Indices idx(numValues);
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-
-    for (size_t i = 0; i < numValues; ++i) idx[i] = i;
-    std::shuffle(idx.begin(), idx.end(), std::default_random_engine(seed));
-
-    return IndicesSet(idx.begin(), idx.begin() + maxValues);
 }
 
 // sort ids by values

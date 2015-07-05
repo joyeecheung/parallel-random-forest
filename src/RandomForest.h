@@ -15,11 +15,13 @@ public:
     RandomForest(size_t numOfTrees, size_t maxValues, size_t numLabels,
                  double sampleCoeff);
     void fit(Values &X, Labels &y, const Indices &ids);
-    Indices sample(const Indices &ids);
     MutLabels predict(Values &X);
     int predict(Row &x);
     bool loadDataSet(const char* filename, size_t idIdx, size_t labelIdx);
 private:
+    IndicesSet chooseFeaturess(size_t numValues, size_t maxValues);
+    Indices sample(const Indices &ids);
+
     vector<DecisionTree> forest;
     MutValues X;
     MutLabels y;

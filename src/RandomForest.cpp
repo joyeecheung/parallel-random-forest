@@ -24,9 +24,17 @@ void RandomForest::fit(Values &X, Labels &y, const Indices &ids) {
 #pragma omp parallel for
     for (int i = 0; i < numOfTrees; ++i) {
 
+    const IndicesSet features = chooseFeaturess(FEATURE_NUM, maxValues);
+#ifdef DEBUG_TREE
+    printf("Chosen features: ");
+    for (auto &f : features) {
+        printf("%d ", f);
+    }
+    printf("\n");
+#endif
         DecisionTree tree;
         // train a tree with the sample
-        tree.fit(X, y, bootstrap, maxValues);
+        tree.fit(X, y, bootstrap, features);
         // put it into the forest
         forest[i] = tree;
 #ifdef DEBUG_TREE
@@ -53,6 +61,19 @@ Indices RandomForest::sample(const Indices &ids) {
     }
     return idx;
 }
+
+
+IndicesSet RandomForest::chooseFeaturess(size_t numValues, size_t maxValues) {
+    // randomly choose maxValues numbers from [0, numValues - 1]
+    Indices idx(numValues);
+    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+
+    for (size_t i = 0; i < numValues; ++i) idx[i] = i;
+    std::shuffle(idx.begin(), idx.end(), std::default_random_engine(seed));
+
+    return IndicesSet(idx.begin(), idx.begin() + maxValues);
+}
+
 
 MutLabels RandomForest::predict(Values &X) {
     int total = X.size();

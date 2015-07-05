@@ -84,10 +84,7 @@ public:
     void print(int indent = 2);
 
     void fit(Values &X, Labels &y, const Indices &ids,
-             const size_t &maxValues);
-
-    void _fit(Values &X, Labels &y,
-              const Indices &ids, const IndicesSet &features);
+             const IndicesSet &features);
 
     MutLabels predict(Values &X);
     int predict(Row &x);
@@ -95,7 +92,6 @@ private:
     double gini(Labels &y, const Indices &ids);
     double gain(Values &X, Labels &y, const Indices &ids,
                 const Indices &set1, const Indices &set2, double initial);
-    IndicesSet chooseValues(size_t numValues, size_t maxValues);
     Indices argsort(Values &X, const Indices &ids, size_t attr);
     bool split(Values &X, const Indices &sorted_idx,
                Indices &set1, Indices &set2, size_t attr);
