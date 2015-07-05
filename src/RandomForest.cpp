@@ -1,5 +1,6 @@
 #include "RandomForest.h"
 #include <cmath>
+#include <cstdlib>
 
 RandomForest::RandomForest(size_t numOfTrees, size_t maxValues, size_t numLabels,
              double sampleCoeff) {
@@ -46,8 +47,6 @@ Indices RandomForest::sample(const Indices &ids) {
     size_t sample_size = (int)(sampleCoeff * data_size);
     Indices idx;
 
-//TODO: parallel
-//#pragma omp parallel for
     for (int i = 0; i < sample_size; ++i) {
         size_t next = rand() % data_size;  // with replacement
         idx.push_back(next);
@@ -61,7 +60,8 @@ MutLabels RandomForest::predict(Values &X) {
 #ifdef DEBUG_FOREST
     printf("\nStart prediction, data size %d...\n", X.size());
 #endif
-//TODO: parallel
+
+// parallel
 #pragma omp parallel for
     for (int i = 0; i < total; ++i) {
         y[i] = predict(X[i]);
@@ -76,8 +76,6 @@ int RandomForest::predict(Row &x) {
     // get the prediction from all tress
     MutLabels results(numOfTrees);
 
-    //TODO: parallel
-    //#pragma omp parallel for
     for (int i = 0; i < numOfTrees; ++i) {
         results[i] = forest[i].predict(x);
     }
@@ -114,20 +112,25 @@ bool csv2data(const char* filename, MutValues &X, MutLabels &y,
     while (std::getline(file, line)) {
         MutRow temp;
         std::istringstream ss(line);
+
         // split by commas
+        // Note: here I use strtol and strtod instead of std::stoi
+        //       and std::stod because mingw32 has a bug and doesn't
+        //       have these. g++ under linux works find though.
         size_t col = 0;
         size_t row_size = labelIdx == -1 ? FEATURE_NUM + 1 : FEATURE_NUM + 2;
         for (size_t i = 0; i < row_size; ++i) {
             std::getline(ss, value, ',');
             if (i == idIdx) {  // id
-                if (labelIdx == -1)
-                    ids.push_back(std::stoi(value));  // real id
-                else
+                if (labelIdx == -1) {
+                  ids.push_back(strtol(value.c_str(), nullptr, 10));  // real id
+                } else {
                     ids.push_back(row);  // idx
+                }
             } else if (i == labelIdx) {  // label
-                y.push_back(std::stoi(value));
+                y.push_back(strtol(value.c_str(), nullptr, 10));
             } else { // value
-                temp[col] = std::stod(value);
+                temp[col] = strtod(value.c_str(), nullptr);
                 col++;
             }
         }

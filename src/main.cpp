@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cmath>
 #include <fstream>
+
 #include "Config.h"
 #include "DecisionTree.h"
 #include "RandomForest.h"
@@ -31,23 +32,33 @@ int main(int argc, char *argv[]) {
     MutLabels y, dummy;
     Indices ids, test_ids;
 
+#ifdef VALIDATE
     csv2data("data/train.csv", X, y, ids, 0, FEATURE_NUM + 1);
     rf.fit(X, y, ids);
     csv2data("data/1000.csv", test_X, dummy, test_ids, 0);
+#else
+    csv2data("data/train.csv", X, y, ids, 0, FEATURE_NUM + 1);
+    rf.fit(X, y, ids);
+    csv2data("data/test.csv", test_X, dummy, test_ids, 0);
+#endif
+
     Labels yhat = rf.predict(test_X);
     size_t count = yhat.size();
-    
+
+#ifdef VALIDATE    
     int errors = 0;
     for (size_t i = 0; i < count; ++i) {
         if (yhat[i] != y[i]) errors++;
         printf("(%d, %d);  ", yhat[i], y[i]);
     }
     printf("\nErrors: %d, %f\n", errors, (double)errors/count);
-    //std::ofstream out("data/submit.csv");
-    //out << "id,label\n";
-    //for (size_t i = 0; i < count; ++i) {
-    //    out << test_ids[i] << ',' << yhat[i] << '\n';
-    //}
-    
+#else
+    std::ofstream out("data/submit.csv");
+    out << "id,label\n";
+    for (size_t i = 0; i < count; ++i) {
+       out << test_ids[i] << ',' << yhat[i] << '\n';
+    }
+#endif
+
     return 0;
 }

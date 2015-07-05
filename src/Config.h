@@ -2,6 +2,7 @@
 #define __CONFIG__
 
 #define JDEBUG
+//#define VALIDATE
 //#define DEBUG_TREE
 #define DEBUG_FOREST
 
@@ -12,7 +13,7 @@
 #include <map>
 #include <string>
 #include <memory>
-#include <ppl.h>
+#include <algorithm>
 
 using std::shared_ptr;
 using std::vector;

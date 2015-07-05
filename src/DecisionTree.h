@@ -29,7 +29,7 @@ public:
 
     int getMostFrequent() const {
         std::vector<pair<int, int>> pairs(data.begin(), data.end());
-        sort(pairs.begin(), pairs.end(), [=](pair<int, int>& a, pair<int, int>& b) {
+        std::sort(pairs.begin(), pairs.end(), [=](const pair<int, int>& a, const pair<int, int>& b) {
                 return a.second > b.second;
             }
         );

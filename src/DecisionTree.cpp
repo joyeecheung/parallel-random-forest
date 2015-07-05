@@ -140,7 +140,7 @@ IndicesSet DecisionTree::chooseValues(size_t numValues, size_t maxValues) {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
 
     for (size_t i = 0; i < numValues; ++i) idx[i] = i;
-    shuffle(idx.begin(), idx.end(), std::default_random_engine(seed));
+    std::shuffle(idx.begin(), idx.end(), std::default_random_engine(seed));
 
     return IndicesSet(idx.begin(), idx.begin() + maxValues);
 }

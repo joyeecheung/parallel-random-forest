@@ -7,4 +7,6 @@
 *.pdb
 obj
 data
+*.make
+Makefile
 
